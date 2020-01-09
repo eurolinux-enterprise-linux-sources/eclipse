@@ -1,7 +1,394 @@
+2010-10-02  Alexander Kurtakov  <akurtako@redhat.com>
+
+	* build.properties: Update for 3.6.1.
+	* build.xml: Better fail messages.
+	* pdebuild.properties: Update for 3.6.1
+
+2010-10-01  Alexander Kurtakov  <akurtako@redhat.com>
+    Update buildSDKSource.sh for 3.6.1 release. (Chris Aniszczyk bz#326597)
+	* patches/eclipse-removeSkipMapsCheck.patch: New file.
+	* buildSDKSource.sh: Update to 3.6.1.
+
+2010-08-23  Roland Grunberg  <rgrunber@redhat.com>
+
+	* runtests.sh: Remove org.junit4/ and junit4.jar during the launch of the
+	o.e.pde.ui.tests. They are recognized as plugins but not as bundles.
+	This causes some failures.
+
+2010-08-17  Andrew Overholt  <overholt@redhat.com>
+
+	* build.xml: Use ${label} instead of "3.5.2" for SWT JAR
+	symlinks.  Pass in profile to use when installing.  Further
+	clean installation of build path references.  Apply patch from
+	Benjamin Drung to clean up some of these references (bug
+	#322283).
+
+2010-08-17  Andrew Overholt  <overholt@redhat.com>
+
+	Bug #294114
+
+	* build.xml: New target 'provisionSDKinDropins' which copies JDT
+	and SDK into the dropins directory of the installation.  New
+	target 'installPlatformAndCVS' which wraps provision.cvs and
+	install.
+	* jdtnonosgidependencies.properties: Re-name from
+	sdknonosgidependencies.properties.
+	* sdknonosgidependencies.properties: Renamed.
+	* jdtdependencies.properties: New file.  OSGi dependencies
+	present in the JDT but not the Platform.
+	* sdkdependencies.properties: Move JDT bits to
+	jdtdependencies.properties.
+
+2010-08-11  Andrew Overholt  <overholt@redhat.com>
+
+	* build.xml: Make symlink to eclipse.ini absolute again to
+	please our Debian friends.
+
+2010-08-11  Andrew Overholt  <overholt@redhat.com>
+
+	Bug #293731
+
+	* build.xml: Add ability to provision just the platform or just the
+	platform and the CVS feature (default is still entire SDK).  Parametrize
+	JUnit4 JAR location.  Replace @qualifier@ also in platform.product since
+	we're using it now.  No longer copy content.{xml,jar} over for debugging
+	during publishing.  Extract publishing of SDK into a common target that
+	can be used by other publishing tasks.  Extract provisioning of SDK into
+	common target.  Add installPlatform/installPlatformAndCVS targets for
+	installing just the platform/platform+CVS.
+	* publishProduct.xml: Parametrize the product file to use.
+	* sdknonosgidependencies.properties: New file.  Non-OSGi dependencies
+	present in the SDK but not the platform.
+	* sdkdependencies.properties: New file.  OSGi dependencies present in the
+	SDK but not the platform.
+	* nonosgidependencies.properties: Strip SDK-only dependencies.
+	* dependencies.properties: Likewise.
+
+2010-08-11  Andrew Overholt  <overholt@redhat.com>
+
+	* build.xml: Make symlink to eclipse.ini relative.
+	* Xvnc.cfg: Add to svn:ignore.
+
+2010-08-09  Andrew Overholt  <overholt@redhat.com>
+
+	* build.xml: Apply ant core and UI test patch to not be so strict with
+	ant -version output.
+
+2010-08-06  Andrew Overholt  <overholt@redhat.com>
+
+	Bug #286825
+
+	* patches/donotstorebuildlogsinfiles.patch: Output SWT build information
+	to stdout and not a log file (Niels Thykier).
+
+2010-08-04  Andrew Overholt  <overholt@redhat.com>
+
+	Bug #321612
+
+	* build.xml: Add ability to pass through -v and -d flags to runtests.sh.
+	Use -DdebugTests=true or -DverboseTests=true.
+	* runtests.sh: Add verbose option (-v).  Pass -data option to test runs.
+
+2010-08-04  Andrew Overholt  <overholt@redhat.com>
+ 
+	Bug #321660
+
+	* build.xml: Remove sdk-tests.properties in clean-sdk task and tests_* in
+	distclean task.  Clean up formatting a bit. 
+
+2010-08-03  Andrew Overholt  <overholt@redhat.com>
+
+	Bug #321284
+
+	* build.xml: Set installation directory after resolving libdir.
+
+2010-07-29  Andrew Overholt  <overholt@redhat.com>
+
+	Bug #319479
+
+	* patches/eclipse-swt-compile-xpt.patch: New file.  Patch from Benjamin
+	Drung to build .xpt file for SWT.
+	* build.xml: Apply above patch.
+
+2010-07-28  Andrew Overholt  <overholt@redhat.com>
+
+	* build.xml: Use bootstrap JARs to build Equinox Initializer.
+
+2010-07-28  Andrew Overholt  <overholt@redhat.com>
+
+	* runtests.sh: Properly canonicalize test build and installation
+	directories.
+
+2010-07-28  Andrew Overholt  <overholt@redhat.com>
+
+	* build.properties: Property-ify test framework.
+	* build.xml: Use variables for provision and installation directories.
+	Build Equinox Initializer application in build target and not in
+	provision.sdk target.  Pass tests build directory and provisioned SDK
+	directory to runtests.sh.
+	* runtests.sh: Take passed-in tests build directory and provisioned SDK
+	directory.  Pass testframework variable to runtests.sh.
+	* junitHelper.xml: Use property of testframework.
+
+2010-07-28  Andrew Overholt  <overholt@redhat.com>
+
+	* build.xml: Fix version of org.eclipse.test (3.2.0 -> 3.3.0).
+	* junitHelper.xml: Likewise.
+	* runtests.sh: Likewise.
+	* sdk-tests.properties: Add to svn:ignore.
+	* tests_*: Add to svn:ignore.
+
+2010-07-23  Andrew Overholt  <overholt@redhat.com>
+
+	* dependencies.properties: 
+	* junitHelper.xml: 
+	* runtests.sh: 
+	* patches/tests-nop2discoverytests.patch: New file.  Don't build the p2
+	discovery tests since that feature isn't part of the SDK.
+	* patches/org.eclipse.pde.ui.tests-LocalTargetDefinitionTests.patch: Removed.
+	* patches/tests-org.eclipse.pde.ui.tests-LocalTargetDefinitionTests.patch:
+	Renamed to clarify that it's a patch for the tests. 
+	* build.xml: Correct typo with LocationTargetDefinitionTests patch name.
+	
+2010-07-27  Andrew Overholt  <overholt@redhat.com>
+
+	Bug #295098
+
+	* patches/org.eclipse.pde.ui.tests-LocalTargetDefinitionTests.patch: New
+	file.  Patch out checking for source bundles not likely to be present in
+	distros.
+	* build.xml: Apply above patch to tests.
+	* symlinks-stamp: Add to svn:ignore.
+	* task-bin: Likewise.
+
+2010-07-27  Andrew Overholt  <overholt@redhat.com>
+
+	Bug #320328
+
+	* pdebuild.xml: Use ${label} instead of hard-coding "3.5.0".
+	* build.xml: Use PDE Build of built SDK to build SDK tests.
+	
+
+2010-07-19  Andrew Overholt  <overholt@redhat.com>
+
+	Bug #319110
+
+	* build.xml: Apply patch from Benjamin Drung to rename some ant targets
+	(distclean -> clean, clean -> clean-sdk).  "distclean" now removes *.log.
+
+2010-07-19  Andrew Overholt  <overholt@redhat.com>
+
+	Bug #319473
+
+	* build.xml: Apply patch from Benjamin Drung to extract SWT .so files.
+	* extract_patterns.txt: New file.  Filename patterns to extract
+	("initialize") from bundle JARs. 
+
+2010-07-14  Andrew Overholt  <overholt@redhat.com>
+
+	* additionalArchs/rename.sh: Add svn:executable property.
+	* pdebuild/eclipse-copy-platform.sh: Likewise.
+	* regenerateBootstrapFiles.sh: Likewise.
+	* runtests.sh: Likewise.
+	* swt_bundle.sh: Likewise.
+
+2010-07-14  Andrew Overholt  <overholt@redhat.com>
+ 
+	Bug #319474
+
+	* patches/eclipse-pde.build-add-package-build.patch: Apply patch from
+	Adnan Hodzic to remove bash-isms from prepare-build-dir.sh.
+
+2010-07-08  Alexander Kurtakov  <akurtako@redhat.com>
+
+	* patches/bz318912.patch: New file.
+	* build.xml: Apply the new patch.
+
+2010-07-07  Alexander Kurtakov  <akurtako@redhat.com>
+
+	* build.xml: Fix strip of the patch.
+	* patches/junit4-nochecksum.patch: Rediff patch.
+	
+
+2010-07-07  Alexander Kurtakov  <akurtako@redhat.com>
+    Remove mediawiki pages which are outdated.
+	* ABOUT.mediawiki: Removed.
+	* README.mediawiki: Removed.
+	* TODO.mediawiki: Removed.
+	
+2010-07-07  Alexander Kurtakov  <akurtako@redhat.com>
+
+	* build.sh: Removed.
+	* build.xml: Save output to log file.
+
+2010-07-06  Alexander Kurtakov  <akurtako@redhat.com>
+    Fix for bz#317391 (Benjamin Drung).
+	* build.properties: Remove buildArch it's autoset by buildscript.
+	* build.sh: Remove buildArch checking code.
+	* build.xml: Determine buildArch by ant.
+	
+2010-07-06  Alexander Kurtakov  <akurtako@redhat.com>
+
+	* regenerateBootstrapFiles.sh: Let launcher dir be a parameter.
+
+2010-07-05  Alexander Kurtakov  <akurtako@redhat.com>
+
+	* buildSDKSource.sh: Remove *.orig files. (Benjamin Drung bz#316525)
+	
+2010-07-05  Alexander Kurtakov  <akurtako@redhat.com>
+
+	* patches/java-home.patch: New file.
+	* build.xml: Do not blindly override JAVA_HOME.
+	* dependencies.properties:  Add icu4j for Debian (Benjamin Drung).
+	
+2010-07-05  Alexander Kurtakov  <akurtako@redhat.com>
+    Refresh all patches. (Benjamin Drung)
+	* build.xml: Make every patch applies in build directory.
+	* dependencies.properties: Remove my testing leftovers.
+	* patches/donotsetjavahomeandoptimizeliblocalfile.patch: Update patch for Helios. 
+	* patches/donotstorebuildlogsinfiles.patch: Likewise.
+	* patches/eclipse-add-archs-executable.patch: Likewise.
+	* patches/eclipse-add-archs-filesystem.patch: Likewise.
+	* patches/eclipse-add-archs-swt.patch: Likewise.
+	* patches/eclipse-add-ppc64-sparc64-s390-s390x.patch: Likewise. 
+	* patches/eclipse-addArchesAnd64bitSWT.patch: Likewise.
+	* patches/eclipse-buildswtnatives.patch: Likewise.
+	* patches/eclipse-no-jetty5.patch: Likewise.
+	* patches/eclipse-nosourcebundlesfordependencies.patch: Likewise. 
+	* patches/eclipse-pde.build-add-package-build.patch: Likewise.
+	* patches/eclipse-swt-buildagainstxulrunner.patch: Likewise.
+	* patches/eclipse-use-newer-commons-codec.patch: Likewise.
+	* patches/gnomeproxy-makefile.patch: Likewise.
+	* patches/junit4-nochecksum.patch: Likewise.
+	* patches/osgi-util.patch: Likewise.
+
+2010-06-23  Alexander Kurtakov  <akurtako@redhat.com>
+
+	* dependencies.properties: Fix jetty and jetty utils lists.
+
+2010-06-11  Alexander Kurtakov  <akurtako@redhat.com>
+
+	* patches/swt_webkit.patch: Removed. Applied upstream.
+	* bootstrap/configuration/config.ini: Start o.e.e.event.
+	* build.xml: Drop patch applied upstream. Don't unzip o.e.e.util/src.zip it's done by the buildSDKSource.sh now.
+
+2010-06-10  Andrew Overholt  <overholt@redhat.com>
+
+	* build.properties: Update release ID.
+	* buildSDKSource.sh: Update release ID.  Unpack osgi.util src.zip into
+	osgi.util/src.
+
+2010-06-10  Andrew Overholt  <overholt@redhat.com>
+
+	* dependencyManifests/org.apache.commons.codec_1.3.0.v20080530-1600.jar/META-INF/MANIFEST.MF:
+	Update to latest SDK-included dependency manifest.
+	* dependencyManifests/org.apache.commons.el_1.0.0.v200806031608.jar/META-INF/MANIFEST.MF:
+	Likewise. 
+	* dependencyManifests/org.apache.jasper_5.5.17.v200903231320.jar/META-INF/MANIFEST.MF:
+	Likewise. 
+
+2010-06-10  Alexander Kurtakov  <akurtako@redhat.com>
+
+	* build.xml: Unzip o.e.equinox.osgi.util src.zip.
+	* nonosgidependencies.properties: Fix junit names.
+	
+2010-06-10  Alexander Kurtakov  <akurtako@redhat.com>
+
+	* dependencyManifests/com.ibm.icu_4.2.1.v20100212.jar/META-INF/MANIFEST.MF: Removed.
+	* dependencyManifests/org.apache.commons.httpclient_3.1.0.v20080605-1935.jar/META-INF/MANIFEST.MF: Removed.
+	* dependencyManifests/org.apache.commons.logging_1.0.4.v200904062259.jar/META-INF/MANIFEST.MF: Removed.
+	* dependencyManifests/org.apache.lucene.analysis_1.9.1.v20080530-1600.jar/META-INF/MANIFEST.MF: Removed.
+	* dependencyManifests/org.apache.lucene_1.9.1.v20080530-1600.jar/META-INF/MANIFEST.MF: Removed.
+	* dependencyManifests/org.mortbay.jetty.server_6.1.15.v200905151201.jar/META-INF/MANIFEST.MF: Removed.
+	* dependencyManifests/org.mortbay.jetty.util_6.1.15.v200905182336.jar/META-INF/MANIFEST.MF: Removed.
+	* dependencyManifests/org.sat4j.pb_2.2.0.v20100225.jar/META-INF/MANIFEST.MF: Removed.
+	* dependencyManifests/com.ibm.icu_4.2.1.v20100412.jar/META-INF/MANIFEST.MF: New file.
+	* dependencyManifests/org.apache.commons.logging_1.0.4.v201005080501.jar/META-INF/MANIFEST.MF: New file.
+	* dependencyManifests/org.apache.lucene.analysis_1.9.1.v20100518-1140.jar/META-INF/MANIFEST.MF: New file.
+	* dependencyManifests/org.apache.lucene_1.9.1.v20100518-1140.jar/META-INF/MANIFEST.MF: New file.
+	* dependencyManifests/org.mortbay.jetty.server_6.1.23.v201004211559.jar/META-INF/MANIFEST.MF: New file.
+	* dependencyManifests/org.mortbay.jetty.util_6.1.23.v201004211559.jar/META-INF/MANIFEST.MF: New file.
+	* dependencyManifests/org.sat4j.core_2.2.0.v20100429.jar/META-INF/MANIFEST.MF: New file.
+	* dependencyManifests/org.sat4j.pb_2.2.0.v20100429.jar/META-INF/MANIFEST.MF: New file.
+	* dependencyManifests/org.apache.commons.httpclient_3.1.0.v201005080502.jar/META-INF/MANIFEST.MF: New file.
+	* build.xml: Fix source preparations.
+	* dependencies.properties: Update to new deps.
+	* nonosgidependencies.properties: Update to new deps.
+	* eclipse-build-generatedScripts.tar.bz2: Regenerated.
+	* patches/eclipse-use-newer-commons-codec.patch: Reset other deps versions too.
+	* pdebuild.xml: Add apache commons to bootstrap.
+
+2010-05-27 Alexander Kurtakov    <akurtako@redhat.com>
+
+	* patches/osgi-util.patch: New patch fixing o.e.osgi.util build from source. (Author: Niels Thykier)
+	* build.xml: Apply the patch.
+
+2010-04-22  Alexander Kurtakov    <akurtako@redhat.com>
+
+	* patches/swt_webkit.patch: New file.
+	* build.xml: Apply webkit patch.
+	* patches/eclipse-buildswtnatives.patch: Add webkit sources.
+
+2010-04-21  Alexander Kurtakov    <akurtako@redhat.com>
+
+	* build.xml: Adapt to the new source tarball structure. Ecf-src is where it belongs to.
+	There is no need to trouble with bootstrap/p2 content. 
+	
+2010-04-21  Alexander Kurtakov    <akurtako@redhat.com>
+
+	* buildSDKSource.sh: New I-build. Put ecf in the main plugins/features directories.
+
+2010-04-21  Alexander Kurtakov    <akurtako@redhat.com>
+
+	* patches/junit4-nochecksum.patch: New file.
+	* build.xml: Apply junit4 checksum patch and remove all checksum files.
+
+2010-04-20  Alexander Kurtakov    <akurtako@redhat.com>
+
+	* bootstrap/configuration/config.ini: Add equinox.ds and deps. 
+	* pdebuild.xml: Likewise.
+
+2010-04-19  Alexander Kurtakov    <akurtako@redhat.com>
+
+	* dependencyManifests/com.ibm.icu_4.0.1.v20090822.jar/META-INF/MANIFEST.MF: Removed.
+	* dependencyManifests/javax.servlet_2.5.0.v200806031605.jar/META-INF/MANIFEST.MF: Removed.
+	* dependencyManifests/org.objectweb.asm_3.1.0.v200803061910.jar/META-INF/MANIFEST.MF: Removed.
+	* dependencyManifests/org.sat4j.core_2.1.1.v20090825.jar/META-INF/MANIFEST.MF: Removed.
+	* dependencyManifests/org.sat4j.pb_2.1.1.v20090825.jar/META-INF/MANIFEST.MF: Removed.
+	* dependencyManifests/com.ibm.icu_4.2.1.v20100212.jar/META-INF/MANIFEST.MF: New file.
+	* dependencyManifests/javax.servlet_2.5.0.v200910301333.jar/META-INF/MANIFEST.MF: New file.
+	* dependencyManifests/org.objectweb.asm_3.2.0.v200909071300.jar/META-INF/MANIFEST.MF: New file.
+	* dependencyManifests/org.sat4j.core_2.2.0.v20100225.jar/META-INF/MANIFEST.MF: New file.
+	* dependencyManifests/org.sat4j.pb_2.2.0.v20100225.jar/META-INF/MANIFEST.MF: New file.
+	* bootstrap/configuration/config.ini: Add org.hamcrest.core to the list of bundles to load.
+	* build.properties: Update for 3.6.
+	* build.xml: Likewise.
+	* dependencies.properties: Likewise.
+	* eclipse-build-generatedScripts.tar.bz2: Regenerated.
+	* nonosgidependencies.properties: Likewise.
+	* patches/donotsetjavahomeandoptimizeliblocalfile.patch: Likewise.
+	* patches/donotstorebuildlogsinfiles.patch: Likewise.
+	* patches/eclipse-add-archs-executable.patch: Likewise.
+	* patches/eclipse-add-ppc64-sparc64-s390-s390x.patch: Likewise.
+	* patches/eclipse-addArchesAnd64bitSWT.patch: Likewise.
+	* patches/eclipse-buildswtnatives.patch: Likewise.
+	* patches/gnomeproxy-makefile.patch: Likewise.
+	* pdebuild.properties: Likewise.
+	* pdebuild.xml: Likewise.
+	* regenerateBootstrapFiles.sh: Likewise. 
+
+2010-04-13  Alexander Kurtakov  <akurtako@redhat.com>
+
+	* buildSDKSource.sh: Make it generate 3.6 stream tarballs.
+
 2010-03-18  Alexander Kurtakov  <akurtako@redhat.com>
 
-	* patches/droppluginversions.patch: New file.
-	* build.xml: Apply patch to match upstream qualifiers.
+	* buildEclipseBuildSource.sh: Produce bzipped tarballs.
+	
+2010-03-18  Alexander Kurtakov  <akurtako@redhat.com>
+
+	* patches/droppluginversions.patch: New file..
+	* build.xml: Apply patch to match upstream 3.5.2 qualifiers.
 
 2010-03-12  Andrew Overholt  <overholt@redhat.com>
 

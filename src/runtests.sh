@@ -12,8 +12,11 @@ Run Eclipse SDK tests
 Optional arguments:
    -h      Show this help message
    -g      Don't run the tests headless
-   -d      Allow remote connection to test runs' JVM
+   -d      Debug tests (allow remote connection to test runs' JVM)
+   -b      Tests build directory
+   -p      Clean installation directory to copy for running test suites
    -t      Timestamp string with which to tag the results
+   -v      Make test runs output to the console
 _EOF_
 }
 
@@ -70,18 +73,28 @@ function init() {
 	#	org.eclipse.jdt.compiler.tool.tests \
 
 	# Defaults
-	debugTests=0
-	headless=1
-	testFramework=org.eclipse.test_3.2.0
-	if [ -z ${timestamp} ]; then
-		timestamp=$(date "+%Y%m%d%H%M%S")
+	if [ -z ${verbose} ]; then
+		verbose=0
 	fi
+	if [ -z ${debugTests} ]; then
+		debugTests=0
+	fi
+	if [ -z ${headless} ]; then
+		headless=1
+	fi
+
 	label=$(grep label build.properties | sed s/label=//)
-	testsRepo=$(pwd)/testsBuild/eclipse-sdktests-${label}-src/buildRepo/
+	testframework=$(grep ^testframework build.properties | sed s/testframework=//)
+	
+	# Make directories absolute
+	testsBuildDirectory=$(readlink -f ${testsBuildDirectory})
+	provisionDir=$(readlink -f ${provisionDir})
+	
+	testsRepo=${testsBuildDirectory}/buildRepo/
 
 	testsParent=$(pwd)/tests_${timestamp}
-        mkdir -p ${testsParent}
-        cp -rp $(pwd)/build/eclipse-${label}-src/installation ${testsParent}/testsinstallation.clean
+    mkdir -p ${testsParent}
+    cp -rp ${provisionDir} ${testsParent}/testsinstallation.clean
 	cleanInstall=${testsParent}/testsinstallation.clean
         workspace=${testsParent}/workspace
 
@@ -97,6 +110,19 @@ function init() {
 
 	rm -rf $datadir $homedir $testhome
 	mkdir -p $datadir $homedir $testhome $results/{xml,logs,html}
+
+	# improves test cases (but not required) for org.eclipse.pde.build.tests
+	echo "${testPluginsToRun}" | grep -q 'org.eclipse.pde.build.tests'
+	if [ $? -eq 0 ]; then
+		deltapackZip=$(pwd)/eclipse-${label}-delta-pack.zip
+		mkdir -p ${testsParent}/deltapack
+		if [ -e ${deltapackZip} ]; then
+			unzip -d ${testsParent}/deltapack ${deltapackZip}
+		else
+			echo "eclipse-${label}-delta-pack was not found at ${deltapackZip}."
+			echo "Some failures should be expected in org.eclipse.pde.build.tests."
+		fi
+	fi
 
 	properties=$(pwd)/sdk-tests.properties
 	rm -f $properties
@@ -171,23 +197,44 @@ function setArch() {
 }
 
 function runTestSuite() {
-	libraryXml=${eclipseHome}/plugins/${testFramework}/library.xml
+	libraryXml=${eclipseHome}/plugins/${testframework}/library.xml
 
-	${eclipseHome}/eclipse \
-	-application org.eclipse.ant.core.antRunner \
-	-file $testDriver \
-	-Declipse-home=${eclipseHome} \
-	-Dos=linux \
-	-Dws=gtk \
-	-Darch=${arch} \
-	-Dlibrary-file=$libraryXml \
-	-propertyfile $properties \
-	-logger org.apache.tools.ant.DefaultLogger \
-	-vmargs \
-	-Duser.home=${homedir} \
-	-Dosgi.os=linux \
-	-Dosgi.ws=gtk \
-	-Dosgi.arch=${arch}
+	if [ $verbose -eq 1 ]; then
+		${eclipseHome}/eclipse \
+		-debug -consolelog \
+		-data ${datadir} \
+		-application org.eclipse.ant.core.antRunner \
+		-file $testDriver \
+		-Declipse-home=${eclipseHome} \
+		-Dos=linux \
+		-Dws=gtk \
+		-Darch=${arch} \
+		-Dlibrary-file=$libraryXml \
+		-propertyfile $properties \
+		-logger org.apache.tools.ant.DefaultLogger \
+		-vmargs \
+		-Duser.home=${homedir} \
+		-Dosgi.os=linux \
+		-Dosgi.ws=gtk \
+		-Dosgi.arch=${arch}
+	else
+		${eclipseHome}/eclipse \
+		-data ${datadir} \
+		-application org.eclipse.ant.core.antRunner \
+		-file $testDriver \
+		-Declipse-home=${eclipseHome} \
+		-Dos=linux \
+		-Dws=gtk \
+		-Darch=${arch} \
+		-Dlibrary-file=$libraryXml \
+		-propertyfile $properties \
+		-logger org.apache.tools.ant.DefaultLogger \
+		-vmargs \
+		-Duser.home=${homedir} \
+		-Dosgi.os=linux \
+		-Dosgi.ws=gtk \
+		-Dosgi.arch=${arch}
+	fi
 }
 
 function cleanAfterTestSuite() {
@@ -235,6 +282,19 @@ function cleanAndSetup() {
 
   cp -rp ${cleanInstall} ${eclipseHome}
   workspace=${testsParent}/workspace
+  
+  # improves test cases (but not required) for org.eclipse.pde.ui.tests
+  if [ ${plugin} = 'org.eclipse.pde.ui.tests' ]; then
+      junitSourceLoc=$(pwd)/org.junit.source_*
+      if [ -e ${junitSourceLoc} ]; then
+	      ln -s ${junitSourceLoc} ${eclipseHome}/plugins
+      else
+          echo "org.junit.source was not found at ${junitSourceLoc}."
+          echo "Some failures should be expected in org.eclipse.pde.ui.tests."
+      fi
+      # these 2 plugins are not being recognized as bundles
+      rm -rf ${eclipseHome}/plugins/org.junit4 ${eclipseHome}/plugins/junit4.jar
+  fi
 }
 
 function installTestPlugin() {
@@ -284,11 +344,11 @@ function runTestPlugin() {
 }
 
 function genHtml() {
-	ant -Declipse-home=${eclipseHome} -Dresults=${results} -DxmlDir=${xmlDir} -f junitHelper.xml
+	ant -Declipse-home=${eclipseHome} -Dresults=${results} -DxmlDir=${xmlDir} -Dtestframework=${testframework} -f junitHelper.xml
 }
 
 # Command-line arguments
-while getopts "de:gt:h" OPTION
+while getopts "vde:gb:p:t:h" OPTION
 do
      case $OPTION in
          d)
@@ -300,12 +360,33 @@ do
          t)
              timestamp=$OPTARG
              ;;
+         b)
+             testsBuildDirectory=$OPTARG
+             ;;
+         p)
+             provisionDir=$OPTARG
+             ;;
          h)
              usage
              exit 1
              ;;
+         v)
+             verbose=1
+             ;;
      esac
 done
+
+if [ -z ${timestamp} ]; then
+	timestamp=$(date "+%Y%m%d%H%M%S")
+fi
+if [ -z ${testsBuildDirectory} ]; then
+	echo "Tests build directory must be specified (-b)";
+	exit 1;
+fi
+if [ -z ${provisionDir} ]; then
+    echo "Directory containing clean provisioned SDK must be specified (-p)";
+	exit 1;
+fi
 
 init
 findXvncAndSetDisplay

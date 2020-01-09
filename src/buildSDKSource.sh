@@ -6,13 +6,12 @@ workDirectory=
 baseBuilder=
 eclipseBuilder=
 
-buildID="R3_5_2"
-baseBuilderTag="R3_5"
-eclipseBuilderTag="R3_5_2"
-label="3.5.2"
+buildID="R3_6_1"
+baseBuilderTag="R3_6_1"
+eclipseBuilderTag="R3_6_1"
+label="3.6.1"
 fetchTests="yes"
-equinoxTag="R35x_v20100209"
-ecfTag="v20090831-1453"
+ecfTag="R-Release_3_3-sdk_feature-22-2010_09_13"
 
 usage="usage:  <build ID> [-workdir <working directory>] [-baseBuilder <path to org.eclipse.releng.basebuilder checkout>] [-eclipseBuilder <path to org.eclipse.releng.eclipsebuilder checkout>] [-baseBuilderTag <org.eclipse.releng.basebuilder tag to check out>] [-noTests]"
 
@@ -83,6 +82,7 @@ if [ ! -e ${eclipseBuilder} ]; then
   cvs -d${cvsRepo} co -r ${eclipseBuilderTag} org.eclipse.releng.eclipsebuilder
   cd "${eclipseBuilder}"
   patch -p0 < "${baseDir}"/patches/eclipse-addFetchMasterAndTestsTargets.patch
+  patch -p0 < "${baseDir}"/patches/eclipse-removeSkipMapsCheck.patch
   cd "${baseDir}"
 fi
 
@@ -121,7 +121,10 @@ fetchMasterFeature \
 
 cd "${fetchDirectory}"
 
-mkdir ecf-src
+# Extract osgi.util src for rebuilding
+pushd plugins/org.eclipse.osgi.util
+  unzip -q -d src src.zip
+popd
 
 # Source for ECF bits that aren't part of SDK map files
 for f in \
@@ -134,7 +137,7 @@ cvs -d :pserver:anonymous@dev.eclipse.org:/cvsroot/rt \
 export -r ${ecfTag} org.eclipse.ecf/framework/bundles/$f;
 done
 
-mv org.eclipse.ecf/framework/bundles/* ecf-src
+mv org.eclipse.ecf/framework/bundles/* plugins
 rm -fr org.eclipse.ecf/framework
 
 for f in \
@@ -147,14 +150,8 @@ cvs -d :pserver:anonymous@dev.eclipse.org:/cvsroot/rt \
 export -r ${ecfTag} org.eclipse.ecf/providers/bundles/$f;
 done
 
-mv org.eclipse.ecf/providers/bundles/* ecf-src
+mv org.eclipse.ecf/providers/bundles/* plugins
 rm -fr org.eclipse.ecf
-
-cvs -d :pserver:anonymous@dev.eclipse.org:/cvsroot/rt \
-export -r ${buildID} org.eclipse.equinox/components/bundles/org.eclipse.equinox.concurrent;
-
-mv org.eclipse.equinox/components/bundles/* ecf-src
-rm -rf org.eclipse.equinox
 
 cd "${fetchDirectory}"
 # We don't want to re-ship these as those bundles inside will already be
@@ -184,6 +181,9 @@ rm fetch_*
 rm -rf features/org.eclipse.sdk.examples
 rm -rf plugins/*.examples*
 
+# Remove temporary files
+find -name '*.orig' -delete
+
 # Remove empty directories
 find -type d -empty -delete
 
@@ -206,6 +206,7 @@ java -jar \
 fetchSdkTestsFeature \
 -DbuildDirectory="${fetchDirectory}" \
 -DskipBase=true \
+-Dhuson=true \
 -DmapsRepo=${cvsRepo} \
 -DmapCvsRoot=${cvsRepo} \
 -DmapsCvsRoot=${cvsRepo} \

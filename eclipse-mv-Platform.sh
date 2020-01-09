@@ -14,7 +14,6 @@ mv $baseDir/features/org.eclipse.help_* features
 mv $baseDir/features/org.eclipse.cvs_* features
 mv $baseDir/plugins/org.eclipse.cvs_* plugins
 mv $baseDir/plugins/org.eclipse.team.cvs.core_* plugins
-mv $baseDir/plugins/org.eclipse.team.cvs.ssh_* plugins
 mv $baseDir/plugins/org.eclipse.team.cvs.ssh2_* plugins
 mv $baseDir/plugins/org.eclipse.team.cvs.ui_* plugins
 mv $baseDir/features/org.eclipse.equinox.p2.user.ui_* features
@@ -27,7 +26,6 @@ mv $baseDir/plugins/org.eclipse.core.filebuffers_* plugins
 mv $baseDir/plugins/org.eclipse.core.filesystem_* plugins
 mv $baseDir/plugins/org.eclipse.core.net_* plugins
 mv $baseDir/plugins/org.eclipse.core.resources_* plugins
-mv $baseDir/plugins/org.eclipse.core.resources.compatibility_* plugins
 mv $baseDir/plugins/org.eclipse.osgi.util_* plugins
 mv $baseDir/plugins/org.eclipse.debug.core_* plugins
 mv $baseDir/plugins/org.eclipse.debug.ui_* plugins
@@ -87,8 +85,10 @@ mv $baseDir/plugins/org.eclipse.update.configurator_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.simpleconfigurator_* plugins
 mv $baseDir/plugins/org.eclipse.rcp_* plugins
 mv $baseDir/plugins/org.eclipse.core.contenttype_* plugins
+mv $baseDir/plugins/org.eclipse.core.externaltools_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.app_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.common_* plugins
+mv $baseDir/plugins/org.eclipse.equinox.event_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.ds_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.initializer_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.preferences_* plugins
@@ -131,13 +131,13 @@ mv $baseDir/plugins/org.eclipse.equinox.p2.director_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.p2.director.app_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.p2.directorywatcher_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.p2.engine_* plugins
-mv $baseDir/plugins/org.eclipse.equinox.p2.exemplarysetup_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.p2.extensionlocation_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.p2.garbagecollector_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.p2.jarprocessor_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.p2.metadata_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.p2.metadata.generator_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.p2.metadata.repository_* plugins
+mv $baseDir/plugins/org.eclipse.equinox.p2.operations_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.p2.publisher_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.p2.repository_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.p2.repository.tools_* plugins
@@ -145,6 +145,7 @@ mv $baseDir/plugins/org.eclipse.equinox.p2.reconciler.dropins_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.p2.touchpoint.eclipse_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.p2.touchpoint.natives_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.p2.ui_* plugins
+mv $baseDir/plugins/org.eclipse.equinox.p2.ql_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.p2.ui.sdk_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.p2.ui.sdk.scheduler_* plugins
 mv $baseDir/plugins/org.eclipse.equinox.p2.updatechecker_* plugins
